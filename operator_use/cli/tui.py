@@ -42,6 +42,15 @@ def print_start():
     console.print(f"┌ [bold {PRIMARY}]Operator[/bold {PRIMARY}]{ver_str} [bold {PRIMARY}]Initial Setup[/bold {PRIMARY}]")
     console.print("│")
 
+def print_step(n: int, total: int, title: str, hint: str = "") -> None:
+    """Print a numbered step header."""
+    console.print(f"[bold {PRIMARY}]│[/bold {PRIMARY}]")
+    step_label = f"[dim]Step {n}/{total}[/dim]"
+    console.print(f"[bold {SECONDARY}]◆[/bold {SECONDARY}] {step_label}  [bold {PRIMARY}]{title}[/bold {PRIMARY}]")
+    if hint:
+        console.print(f"[bold {PRIMARY}]│[/bold {PRIMARY}]  [dim]{hint}[/dim]")
+
+
 def print_info(title: str, info_dict: dict):
     console.print(f"[bold {SECONDARY}]◇[/bold {SECONDARY}] [bold {PRIMARY}]{title}[/bold {PRIMARY}]")
     console.print("│")

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from operator_use.cli.tui import print_banner, print_start, select, text_input, confirm, print_end, print_end_first_install, console
+from operator_use.cli.tui import print_banner, print_start, print_step, select, text_input, confirm, print_end, print_end_first_install, console
 
 # --- Registry Data ---
 
@@ -357,67 +357,28 @@ def run_first_install():
     def _need_key(prov_key: str, prov_name: str) -> bool:
         return prov_key not in api_keys_dict and prov_name not in OAUTH_PROVIDERS and prov_name not in NO_KEY_PROVIDERS
 
-    # Step 1: Agent name
+    # Step 1/3 — Your agent
+    print_step(1, 3, "Your agent", "Give your agent a name — used for its workspace folder.")
     raw = text_input("Name your agent (e.g. mybot, personal, work):", default="operator")
     agent_id = _re.sub(r"[^a-z0-9_-]", "-", raw.strip().lower()) or "operator"
 
-    # Step 2: LLM provider + model + API key
+    # Step 2/3 — Language model (required)
+    print_step(2, 3, "Language model", "This is the AI brain. Pick a provider you have access to.")
     prov_name = select("Pick the LLM provider:", list(LLM_PROVIDERS.keys()))
-    prov_key  = get_provider_key(prov_name)
-    llm_model = _select_model("Pick the LLM model:", LLM_PROVIDERS[prov_name])
+    prov_key = get_provider_key(prov_name)
     if prov_name in OAUTH_PROVIDERS:
         console.print("│")
         console.print(f"│  [dim]ℹ  {OAUTH_NOTES[prov_name]}[/dim]")
     elif _need_key(prov_key, prov_name):
         api_keys_dict[prov_key] = text_input(f"Enter API Key for {prov_name}:", is_password=True)
+    llm_model = _select_model("Pick the LLM model:", LLM_PROVIDERS[prov_name])
     llm_provider_key = prov_key
 
-    # Step 3: TTS (optional)
-    tts_enabled = False
-    tts_provider_key = ""
-    tts_model = ""
-    tts_voice: str | None = None
-    if confirm("Enable Text-to-Speech (TTS)?"):
-        tts_prov_name = select("Pick the TTS provider:", list(TTS_PROVIDERS.keys()))
-        tts_provider_key = get_provider_key(tts_prov_name)
-        tts_model = _select_model("Pick the TTS model:", TTS_PROVIDERS[tts_prov_name])
-        if tts_prov_name in VOICES:
-            tts_voice = select("Pick a voice:", VOICES[tts_prov_name])
-        if _need_key(tts_provider_key, tts_prov_name):
-            api_keys_dict[tts_provider_key] = text_input(f"Enter API Key for {tts_prov_name}:", is_password=True)
-        tts_enabled = True
-
-    # Step 4: STT (optional)
-    stt_enabled = False
-    stt_provider_key = ""
-    stt_model = ""
-    if confirm("Enable Speech-to-Text (STT)?"):
-        stt_prov_name = select("Pick the STT provider:", list(STT_PROVIDERS.keys()))
-        stt_provider_key = get_provider_key(stt_prov_name)
-        stt_model = _select_model("Pick the STT model:", STT_PROVIDERS[stt_prov_name])
-        if _need_key(stt_provider_key, stt_prov_name):
-            api_keys_dict[stt_provider_key] = text_input(f"Enter API Key for {stt_prov_name}:", is_password=True)
-        stt_enabled = True
-
-    # Step 5: Heartbeat
-    heartbeat_enabled = confirm("Enable Heartbeat? (agent runs periodic self-maintenance tasks)")
-    heartbeat_llm_provider_key = ""
-    heartbeat_llm_model = ""
-    if heartbeat_enabled:
-        hb_prov_name = select("Pick the LLM provider for Heartbeat:", list(LLM_PROVIDERS.keys()))
-        hb_prov_key  = get_provider_key(hb_prov_name)
-        heartbeat_llm_model = _select_model("Pick the Heartbeat LLM model:", LLM_PROVIDERS[hb_prov_name])
-        if hb_prov_name in OAUTH_PROVIDERS:
-            console.print("│")
-            console.print(f"│  [dim]ℹ  {OAUTH_NOTES[hb_prov_name]}[/dim]")
-        elif _need_key(hb_prov_key, hb_prov_name):
-            api_keys_dict[hb_prov_key] = text_input(f"Enter API Key for {hb_prov_name}:", is_password=True)
-        heartbeat_llm_provider_key = hb_prov_key
-
-    # Step 6: Channel (optional)
+    # Step 3/3 — Messaging channel (optional)
+    print_step(3, 3, "Messaging channel", "Connect a channel to message your agent. You can add more later with `operator channel add`.")
+    ch_name = select("Pick a channel to connect:", ["Telegram", "Discord", "Slack", "Skip for now"])
     agent_channels: dict = {"telegram": "", "discord": "", "slack_bot": "", "slack_app": ""}
-    if confirm("Connect a channel now? (Telegram, Discord, or Slack)"):
-        ch_name = select("Pick a channel to connect:", ["Telegram", "Discord", "Slack"])
+    if ch_name != "Skip for now":
         note = CHANNEL_NOTES.get(ch_name, "")
         if note:
             console.print("│")
@@ -439,19 +400,22 @@ def run_first_install():
 
     _save_config(
         agent_defs=agent_defs,
-        stt_enabled=stt_enabled,
-        stt_provider_key=stt_provider_key,
-        stt_model=stt_model,
-        tts_enabled=tts_enabled,
-        tts_provider_key=tts_provider_key,
-        tts_model=tts_model,
-        tts_voice=tts_voice,
-        heartbeat_enabled=heartbeat_enabled,
-        heartbeat_llm_provider_key=heartbeat_llm_provider_key,
-        heartbeat_llm_model=heartbeat_llm_model,
+        stt_enabled=False,
+        stt_provider_key="",
+        stt_model="",
+        tts_enabled=False,
+        tts_provider_key="",
+        tts_model="",
+        tts_voice=None,
+        heartbeat_enabled=False,
+        heartbeat_llm_provider_key="",
+        heartbeat_llm_model="",
         api_keys_dict=api_keys_dict,
     )
     print_end_first_install()
+
+
+# TTS, STT, heartbeat configurable via: operator onboard
 
 
 def run_initial_setup():
