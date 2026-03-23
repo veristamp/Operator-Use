@@ -1,6 +1,6 @@
 """CDP PerformanceTimeline Methods Types"""
 from __future__ import annotations
-from typing import TypedDict, NotRequired, Required, Literal, Any, Dict, Union, Optional, List, Set, Tuple
+from typing import TypedDict, List
 
 class enableParameters(TypedDict, total=True):
     eventTypes: List[str]

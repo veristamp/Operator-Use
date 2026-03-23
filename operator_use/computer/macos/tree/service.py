@@ -1,8 +1,8 @@
-﻿from operator_use.computer.macos.tree.config import INTERACTIVE_ACTIONS, INTERACTIVE_ROLES, CONTAINER_ROLES, SCROLLABLE_ROLES, WINDOW_CONTROL_SUBROLES
-from operator_use.computer.macos.tree.views import TreeState, TreeElementNode, ScrollElementNode, TextElementNode, BoundingBox, Center
+﻿from operator_use.computer.macos.tree.config import INTERACTIVE_ROLES, WINDOW_CONTROL_SUBROLES
+from operator_use.computer.macos.tree.views import TreeState, TreeElementNode, ScrollElementNode, TextElementNode, BoundingBox
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from operator_use.computer.macos.desktop.config import BROWSER_BUNDLE_IDS, SYSTEM_UI_BUNDLE_IDS
-from operator_use.computer.macos.desktop.views import Status, Window
+from operator_use.computer.macos.desktop.views import Window
 from operator_use.computer.macos import ax
 from time import perf_counter
 import logging
@@ -201,7 +201,7 @@ class Tree:
         # has_actions=any(action in INTERACTIVE_ACTIONS for action in control.ActionNames)
 
         has_roles=(control.Role in INTERACTIVE_ROLES) or (control.Role=="AXImage" and control.Label)
-        
+
         is_interactive=((has_roles and is_enabled) or has_help_text) and is_visible
 
         if is_interactive:

@@ -73,7 +73,7 @@ class TTSSarvam(BaseTTS):
             model=self._model,
             pace=self.speed,
         )
-        
+
         if response.audios and len(response.audios) > 0:
             audio_base64 = response.audios[0]
             audio_bytes = base64.b64decode(audio_base64)
@@ -97,7 +97,7 @@ class TTSSarvam(BaseTTS):
             model=self._model,
             pace=self.speed,
         )
-        
+
         if response.audios and len(response.audios) > 0:
             audio_base64 = response.audios[0]
             audio_bytes = base64.b64decode(audio_base64)

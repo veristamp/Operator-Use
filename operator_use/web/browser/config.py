@@ -9,7 +9,7 @@ def _get_browser_user_data_dir(browser: str) -> str:
     """Retrieve the standard user data directory for the specified browser."""
     system = platform.system()
     home = Path.home()
-    
+
     if system == "Windows":
         local = Path(os.environ.get("LOCALAPPDATA", home / "AppData" / "Local"))
         if browser == 'chrome':

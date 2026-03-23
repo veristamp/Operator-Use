@@ -5,17 +5,14 @@ from operator_use.computer.windows.tree.service import Tree
 from PIL import ImageGrab, ImageFont, ImageDraw, Image
 from operator_use.computer.windows import uia
 from locale import getpreferredencoding
-from contextlib import contextmanager
 from time import perf_counter
 from psutil import Process
 import subprocess
 import win32gui
-import win32con
 import logging
 import base64
 import random
 import ctypes
-import csv
 import os
 import io
 
@@ -50,7 +47,7 @@ class Desktop:
 
         logger.debug(f"Active window: {active_window or 'No Active Window Found'}")
         logger.debug(f"Windows: {windows}")
-        
+
         #Preparing handles for Tree
         other_windows_handles=list(controls_handles-windows_handles)
 
@@ -70,7 +67,7 @@ class Desktop:
                 screenshot=self.get_screenshot(as_bytes=as_bytes)
         else:
             screenshot=None
-            
+
         self.desktop_state=DesktopState(
             active_window=active_window,
             windows=windows,
@@ -83,7 +80,7 @@ class Desktop:
         end_time = perf_counter()
         logger.info(f"[Desktop] Desktop State capture took {end_time - start_time:.2f} seconds")
         return self.desktop_state
-    
+
     def get_window_status(self,control:uia.Control)->Status:
         if uia.IsIconic(control.NativeWindowHandle):
             return Status.MINIMIZED
@@ -93,12 +90,12 @@ class Desktop:
             return Status.NORMAL
         else:
             return Status.HIDDEN
-    
+
     def execute_command(self, command: str,timeout:int=10) -> tuple[str, int]:
         try:
             encoded = base64.b64encode(command.encode("utf-16le")).decode("ascii")
             result = subprocess.run(
-                ['powershell', '-NoProfile', '-EncodedCommand', encoded], 
+                ['powershell', '-NoProfile', '-EncodedCommand', encoded],
                 capture_output=True,  # No errors='ignore' - let subprocess return bytes
                 timeout=timeout,
                 cwd=os.path.expanduser(path='~')
@@ -115,19 +112,19 @@ class Desktop:
             return ('Command execution timed out', 1)
         except Exception as e:
             return (f'Command execution failed: {type(e).__name__}: {e}', 1)
-        
+
     def is_window_browser(self,node:uia.Control):
         '''Give any node of the app and it will return True if the app is a browser, False otherwise.'''
         process=Process(node.ProcessId)
         return Browser.has_process(process.name())
-    
+
     def is_window_visible(self,window:uia.Control)->bool:
         is_minimized=self.get_window_status(window)!=Status.MINIMIZED
         size=window.BoundingRectangle
         area=size.width()*size.height()
         is_overlay=self.is_overlay_window(window)
         return not is_overlay and is_minimized and area>10
-    
+
     def is_overlay_window(self,element:uia.Control) -> bool:
         no_children = element.GetFirstChildControl() is None
         is_name = "Overlay" in element.Name.strip()
@@ -191,13 +188,13 @@ class Desktop:
     def get_window_from_element_handle(self, element_handle: int) -> uia.Control:
         current = uia.ControlFromHandle(element_handle)
         root_handle = uia.GetRootControl().NativeWindowHandle
-        
+
         while True:
             parent = current.GetParentControl()
             if parent is None or parent.NativeWindowHandle == root_handle:
                 return current
             current = parent
-        
+
     def get_windows(self,controls_handles:set[int]|None=None) -> tuple[list[Window],set[int]]:
         try:
             windows = []
@@ -208,7 +205,7 @@ class Desktop:
                     child = uia.ControlFromHandle(hwnd)
                 except Exception:
                     continue
-                
+
                 # Filter out Overlays (e.g. NVIDIA, Steam)
                 if self.is_overlay_window(child):
                     continue
@@ -217,10 +214,10 @@ class Desktop:
                     window_pattern=child.GetPattern(uia.PatternId.WindowPattern)
                     if (window_pattern is None):
                         continue
-                        
+
                     if window_pattern.CanMinimize and window_pattern.CanMaximize:
                         status = self.get_window_status(child)
-                        
+
                         bounding_rect=child.BoundingRectangle
                         if bounding_rect.isempty() and status!=Status.MINIMIZED:
                             continue
@@ -246,12 +243,12 @@ class Desktop:
             logger.error(f"Error in get_windows: {ex}")
             windows = []
         return windows,window_handles
-    
+
     def get_dpi_scaling(self):
         user32 = ctypes.windll.user32
         dpi = user32.GetDpiForSystem()
         return dpi / 96.0
-    
+
     def get_screen_size(self)->Size:
         width, height = uia.GetVirtualScreenSize()
         return Size(width=width,height=height)
@@ -259,8 +256,8 @@ class Desktop:
     def get_screenshot(self,as_bytes:bool=False)->bytes|Image.Image:
         try:
             screenshot = ImageGrab.grab(all_screens=True)
-        except Exception as e:
-            logger.warning(f"Failed to capture virtual screen, using primary screen")
+        except Exception:
+            logger.warning("Failed to capture virtual screen, using primary screen")
             screenshot = ImageGrab.grab()
         if as_bytes:
             buffered = io.BytesIO()
@@ -322,7 +319,7 @@ class Desktop:
 
         for label,node in enumerate(nodes):
             draw_annotation(label, node)
-            
+
         if as_bytes:
             buffered = io.BytesIO()
             padded_screenshot.save(buffered, format="PNG")

@@ -1,6 +1,6 @@
 """CDP WebAudio Types"""
 from __future__ import annotations
-from typing import TypedDict, NotRequired, Required, Literal, Any, Dict, Union, Optional, List, Set, Tuple
+from typing import TypedDict, NotRequired, Literal
 
 GraphObjectId = str
 """An unique ID for a graph object (AudioContext, AudioNode, AudioParam) in Web Audio API"""

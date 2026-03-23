@@ -21,7 +21,7 @@ class ToolResult:
     @classmethod
     def success_result(cls,output:str,metadata:dict[str,Any]=None) -> "ToolResult":
         return cls(success=True,output=output,metadata=metadata)
-    
+
     @classmethod
     def error_result(cls,error:str,metadata:dict[str,Any]=None) -> "ToolResult":
         return cls(success=False,error=error,metadata=metadata)

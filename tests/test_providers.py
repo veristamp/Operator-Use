@@ -1,6 +1,5 @@
 """Tests for provider models and events."""
 
-import pytest
 from operator_use.providers.views import TokenUsage, Metadata
 from operator_use.providers.events import (
     LLMStreamEventType,

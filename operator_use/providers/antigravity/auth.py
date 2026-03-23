@@ -248,7 +248,7 @@ def login() -> dict:
     thread.daemon = True
     thread.start()
 
-    print(f"\nOpening browser for Antigravity login...")
+    print("\nOpening browser for Antigravity login...")
     print(f"If it doesn't open automatically, visit:\n  {auth_url}\n")
     webbrowser.open(auth_url)
     thread.join(timeout=120)

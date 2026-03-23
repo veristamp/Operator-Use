@@ -1,6 +1,5 @@
 """Tests for bus message models and helper functions."""
 
-import pytest
 from operator_use.bus.views import (
     TextPart,
     ImagePart,

@@ -1,12 +1,11 @@
 """Tests for Orchestrator — routing, message building, outgoing building."""
 
 import pytest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 from operator_use.orchestrator.service import Orchestrator, _extract_file_content
 from operator_use.bus.service import Bus
-from operator_use.bus.views import IncomingMessage, TextPart, AudioPart, FilePart, ImagePart
+from operator_use.bus.views import IncomingMessage, TextPart, AudioPart, FilePart
 from operator_use.messages.service import AIMessage, HumanMessage
 from operator_use.bus.views import StreamPhase
 

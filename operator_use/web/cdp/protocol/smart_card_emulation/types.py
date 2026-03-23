@@ -1,6 +1,6 @@
 """CDP SmartCardEmulation Types"""
 from __future__ import annotations
-from typing import TypedDict, NotRequired, Required, Literal, Any, Dict, Union, Optional, List, Set, Tuple
+from typing import TypedDict, NotRequired, Literal
 
 ResultCode = Literal['success','removed-card','reset-card','unpowered-card','unresponsive-card','unsupported-card','reader-unavailable','sharing-violation','not-transacted','no-smartcard','proto-mismatch','system-cancelled','not-ready','cancelled','insufficient-buffer','invalid-handle','invalid-parameter','invalid-value','no-memory','timeout','unknown-reader','unsupported-feature','no-readers-available','service-stopped','no-service','comm-error','internal-error','server-too-busy','unexpected','shutdown','unknown-card','unknown']
 """Indicates the PC/SC error code.  This maps to: PC/SC Lite: https://pcsclite.apdu.fr/api/group__ErrorCodes.html Microsoft: https://learn.microsoft.com/en-us/windows/win32/secauthn/authentication-return-values"""

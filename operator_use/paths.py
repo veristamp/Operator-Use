@@ -16,3 +16,8 @@ def get_workspaces_dir() -> Path:
 def get_named_workspace_dir(name: str) -> Path:
     """Return a named agent's workspace directory: ~/.operator-use/workspaces/<name>"""
     return get_workspaces_dir() / name
+
+
+def get_media_dir() -> Path:
+    """Return the media storage directory: ~/.operator-use/media"""
+    return _DIR / "media"

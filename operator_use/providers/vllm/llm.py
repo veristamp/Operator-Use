@@ -357,7 +357,7 @@ class ChatVLLM(BaseChatLLM):
         tool_call_name = None
         tool_call_args = ""
         usage = None
-        
+
         text_started = False
         think_started = False
 
@@ -404,7 +404,7 @@ class ChatVLLM(BaseChatLLM):
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(
@@ -462,7 +462,7 @@ class ChatVLLM(BaseChatLLM):
         tool_call_name = None
         tool_call_args = ""
         usage = None
-        
+
         text_started = False
         think_started = False
 
@@ -509,7 +509,7 @@ class ChatVLLM(BaseChatLLM):
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(
@@ -537,7 +537,7 @@ class ChatVLLM(BaseChatLLM):
                 owned_by=owned_by,
             )
         except Exception:
-            logger.debug(f"Could not retrieve model metadata from vLLM server, using defaults")
+            logger.debug("Could not retrieve model metadata from vLLM server, using defaults")
             return Metadata(
                 name=self._model,
                 context_window=32768,

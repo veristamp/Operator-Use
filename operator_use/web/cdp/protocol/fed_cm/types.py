@@ -1,6 +1,6 @@
 """CDP FedCm Types"""
 from __future__ import annotations
-from typing import TypedDict, NotRequired, Required, Literal, Any, Dict, Union, Optional, List, Set, Tuple
+from typing import TypedDict, NotRequired, Literal
 
 LoginState = Literal['SignIn','SignUp']
 """Whether this is a sign-up or sign-in action for this account, i.e. whether this account has ever been used to sign in to this RP before."""

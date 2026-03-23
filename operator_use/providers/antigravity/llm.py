@@ -19,7 +19,6 @@ import time
 from typing import AsyncIterator, Iterator, List, Optional
 
 import httpx
-from pydantic import BaseModel
 
 from operator_use.messages import (
     AIMessage,

@@ -32,15 +32,11 @@ from Quartz import (
     kCGEventRightMouseUp,
     kCGEventOtherMouseDown,
     kCGEventOtherMouseUp,
-    kCGScrollEventUnitPixel,
     kCGScrollEventUnitLine,
     kCGMouseButtonLeft,
     kCGMouseButtonRight,
     kCGMouseButtonCenter,
-    kCGEventFlagMaskCommand,
     kCGEventFlagMaskShift,
-    kCGEventFlagMaskAlternate,
-    kCGEventFlagMaskControl,
     CGMainDisplayID,
     CGDisplayPixelsWide,
     CGDisplayPixelsHigh,
@@ -88,7 +84,6 @@ if TYPE_CHECKING:
     from macos_mcp.ax.controls import ApplicationControl, Control, WindowControl
 
 from .enums import (
-    AXError,
     AXValueType,
     Attribute,
     KeyCode,
@@ -248,7 +243,7 @@ def IsAccessibilityEnabledWithPrompt() -> bool:
 
     Returns True if the process is trusted.
     """
-    from CoreFoundation import CFDictionaryCreate, kCFBooleanTrue
+    from CoreFoundation import kCFBooleanTrue
     options = {
         'AXTrustedCheckOptionPrompt': kCFBooleanTrue,
     }

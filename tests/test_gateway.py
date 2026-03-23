@@ -2,7 +2,7 @@
 
 import asyncio
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 from operator_use.bus.service import Bus
 from operator_use.bus.views import IncomingMessage, OutgoingMessage, TextPart

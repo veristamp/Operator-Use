@@ -62,7 +62,7 @@ class ToolRegistry:
             instance = tool.model(**params)
             coerced = {k: v for k, v in instance.model_dump().items() if k in params or v is not None}
             return [], coerced
-        except ValidationError as e:
+        except ValidationError:
             errors = tool.validate_params(params)
             return errors, params
         except Exception as e:

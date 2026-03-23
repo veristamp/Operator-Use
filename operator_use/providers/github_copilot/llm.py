@@ -14,8 +14,7 @@ Token resolution order:
 import json
 import logging
 import os
-import time
-from typing import Any, AsyncIterator, Iterator, List, Optional
+from typing import AsyncIterator, Iterator, List, Optional
 
 import httpx
 

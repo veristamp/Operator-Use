@@ -12,10 +12,9 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Any, AsyncIterator, Iterator, List, Optional, overload
+from typing import AsyncIterator, Iterator, List, Optional
 
 import httpx
-from pydantic import BaseModel
 
 from operator_use.messages import (
     AIMessage,
@@ -32,7 +31,6 @@ from operator_use.providers.events import (
     LLMStreamEvent,
     LLMStreamEventType,
     ToolCall,
-    Thinking,
 )
 from operator_use.providers.views import Metadata, TokenUsage
 from operator_use.tools import Tool

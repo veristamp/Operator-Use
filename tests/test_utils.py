@@ -1,6 +1,5 @@
 """Tests for utility helpers."""
 
-import pytest
 from pathlib import Path
 
 from operator_use.utils.helper import is_binary_file, resolve, ensure_directory

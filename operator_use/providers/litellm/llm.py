@@ -1,5 +1,4 @@
-﻿import os
-import json
+﻿import json
 import logging
 from typing import Iterator, AsyncIterator, List, Optional, Any, overload
 import litellm
@@ -414,7 +413,7 @@ class ChatLiteLLM(BaseChatLLM):
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(
@@ -503,7 +502,7 @@ class ChatLiteLLM(BaseChatLLM):
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(

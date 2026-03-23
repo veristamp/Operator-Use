@@ -1,6 +1,5 @@
 """Tests for Skills — list, load, metadata, summary, formatter stripping."""
 
-import pytest
 from pathlib import Path
 
 from operator_use.agent.skills.service import Skills

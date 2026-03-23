@@ -670,7 +670,7 @@ class Control():
         """
         try:
             handle = self.Element.CurrentNativeWindowHandle
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return 0
         return 0 if handle is None else handle
 
@@ -716,7 +716,7 @@ class Control():
         elementArray = self.Element.FindAll(scope, condition)
         if not elementArray:
             return []
-        
+
         controls = []
         length = elementArray.Length
         for i in range(length):
@@ -725,7 +725,7 @@ class Control():
             if control:
                 controls.append(control)
         return controls
-    
+
     def FindAllBuildCache(self, scope: int, condition, cacheRequest: 'CacheRequest') -> List['Control']:
         """
         Find all UI Automation elements that satisfy the specified condition, and cache properties and patterns.
@@ -741,7 +741,7 @@ class Control():
         elementArray = self.Element.FindAllBuildCache(scope, condition, cacheRequest.check_request)
         if not elementArray:
             return []
-        
+
         controls = []
         length = elementArray.Length
         for i in range(length):
@@ -750,7 +750,7 @@ class Control():
             if control:
                 controls.append(control)
         return controls
-    
+
     def FindFirst(self, scope: int, condition) -> Optional['Control']:
         """
         Find the first UI Automation element that satisfies the specified condition.
@@ -764,7 +764,7 @@ class Control():
         """
         element = self.Element.FindFirst(scope, condition)
         return Control.CreateControlFromElement(element)
-    
+
     def FindFirstBuildCache(self, scope: int, condition, cacheRequest: 'CacheRequest') -> Optional['Control']:
         """
         Find the first UI Automation element that satisfies the specified condition, and cache properties and patterns.
@@ -779,7 +779,7 @@ class Control():
         """
         element = self.Element.FindFirstBuildCache(scope, condition, cacheRequest.check_request)
         return Control.CreateControlFromElement(element)
-    
+
     def GetCachedChildren(self) -> List['Control']:
         """
         Retrieve the cached child elements of this UI Automation element.
@@ -795,7 +795,7 @@ class Control():
             elementArray = self.Element.GetCachedChildren()
             if not elementArray:
                 return []
-            
+
             controls = []
             length = elementArray.Length
             for i in range(length):
@@ -804,9 +804,9 @@ class Control():
                 if control:
                     controls.append(control)
             return controls
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return []
-    
+
     def GetCachedParent(self) -> Optional['Control']:
         """
         Retrieve the cached parent of this UI Automation element.
@@ -819,9 +819,9 @@ class Control():
         try:
             element = self.Element.GetCachedParent()
             return Control.CreateControlFromElement(element)
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return None
-    
+
     def GetCachedPattern(self, patternId: int):
         """
         Retrieve a cached pattern interface from this UI Automation element.
@@ -836,9 +836,9 @@ class Control():
             pattern = self.Element.GetCachedPattern(patternId)
             if pattern:
                 return CreatePattern(patternId, pattern)
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return None
-    
+
     def GetCachedPatternAs(self, patternId: int, riid):
         """
         Retrieve a cached pattern interface from this UI Automation element, with a specific interface ID.
@@ -852,9 +852,9 @@ class Control():
         """
         try:
             return self.Element.GetCachedPatternAs(patternId, riid)
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return None
-    
+
     def GetCachedPropertyValue(self, propertyId: int) -> Any:
         """
         Retrieve a cached property value from this UI Automation element.
@@ -867,9 +867,9 @@ class Control():
         """
         try:
             return self.Element.GetCachedPropertyValue(propertyId)
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return None
-    
+
     def GetCachedPropertyValueEx(self, propertyId: int, ignoreDefaultValue: int) -> Any:
         """
         Retrieve a cached property value from this UI Automation element, optionally ignoring the default value.
@@ -883,7 +883,7 @@ class Control():
         """
         try:
             return self.Element.GetCachedPropertyValueEx(propertyId, ignoreDefaultValue)
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return None
 
     def GetClickablePoint(self) -> Tuple[int, int, bool]:
@@ -908,7 +908,7 @@ class Control():
                 subPattern = CreatePattern(patternId, pattern)
                 self._supportedPatterns[patternId] = subPattern
                 return subPattern
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             pass
 
     def GetPatternAs(self, patternId: int, riid):
@@ -958,7 +958,7 @@ class Control():
         """
         try:
             return self.Element.SetFocus() == S_OK
-        except comtypes.COMError as ex:
+        except comtypes.COMError:
             return False
 
     @property

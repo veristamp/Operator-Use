@@ -1,6 +1,5 @@
 """Tests for the Bus message queue."""
 
-import asyncio
 import pytest
 
 from operator_use.bus.service import Bus

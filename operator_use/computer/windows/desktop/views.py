@@ -31,7 +31,7 @@ class Window:
     bounding_box:BoundingBox
     handle: int
     process_id:int
-    
+
     def to_row(self):
         return [self.name, self.depth, self.status.value, self.bounding_box.width, self.bounding_box.height, self.handle]
 

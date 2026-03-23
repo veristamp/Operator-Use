@@ -1,7 +1,7 @@
 ﻿import os
 import json
 import logging
-from typing import Iterator, AsyncIterator, List, Optional, Any, Union, overload
+from typing import Iterator, AsyncIterator, List, Optional, Any, overload
 from openai import AzureOpenAI, AsyncAzureOpenAI
 from pydantic import BaseModel
 from operator_use.providers.base import BaseChatLLM
@@ -16,7 +16,7 @@ class ChatAzureOpenAI(BaseChatLLM):
     """
     Azure OpenAI LLM implementation following the BaseChatLLM protocol.
     """
-    
+
     def __init__(
         self,
         deployment_name: str,
@@ -45,7 +45,7 @@ class ChatAzureOpenAI(BaseChatLLM):
         self.api_key = api_key or os.environ.get("AZURE_OPENAI_API_KEY")
         self.azure_endpoint = azure_endpoint or os.environ.get("AZURE_OPENAI_ENDPOINT")
         self.temperature = temperature
-        
+
         self.client = AzureOpenAI(
             api_key=self.api_key,
             azure_endpoint=self.azure_endpoint,
@@ -88,7 +88,7 @@ class ChatAzureOpenAI(BaseChatLLM):
                 content_list = []
                 if msg.content:
                     content_list.append({"type": "text", "text": msg.content})
-                
+
                 b64_imgs = msg.convert_images(format="base64")
                 for b64 in b64_imgs:
                     content_list.append({
@@ -202,21 +202,21 @@ class ChatAzureOpenAI(BaseChatLLM):
     def invoke(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> LLMEvent:
         openai_messages = self._convert_messages(messages)
         openai_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._deployment,
             "messages": openai_messages,
             **self.kwargs
         }
-        
+
         # Only add tools if they exist
         if openai_tools:
             params["tools"] = openai_tools
-        
+
         # Reasoning models don't support temperature
         if self.temperature is not None and not self._is_reasoning_model():
             params["temperature"] = self.temperature
-        
+
         if structured_output:
             # Use beta parse endpoint for structured outputs
             response = self.client.beta.chat.completions.parse(
@@ -231,7 +231,7 @@ class ChatAzureOpenAI(BaseChatLLM):
                 ) or getattr(
                     response.usage.completion_tokens_details, "thinking_tokens", None
                 )
-            usage = TokenUsage(
+            TokenUsage(
                 prompt_tokens=response.usage.prompt_tokens,
                 completion_tokens=response.usage.completion_tokens,
                 total_tokens=response.usage.total_tokens,
@@ -241,10 +241,10 @@ class ChatAzureOpenAI(BaseChatLLM):
             parsed = response.choices[0].message.parsed
             content_dump = parsed.model_dump()
             return LLMEvent(type=LLMEventType.TEXT, content=json.dumps(content_dump) if isinstance(content_dump, dict) else str(content_dump))
-        
+
         if json_mode:
             params["response_format"] = {"type": "json_object"}
-            
+
         response = self.client.chat.completions.create(**params)
         return self._process_response(response)
 
@@ -255,20 +255,20 @@ class ChatAzureOpenAI(BaseChatLLM):
     async def ainvoke(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> LLMEvent:
         openai_messages = self._convert_messages(messages)
         openai_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._deployment,
             "messages": openai_messages,
             **self.kwargs
         }
-        
+
         if openai_tools:
             params["tools"] = openai_tools
-        
+
         # Reasoning models don't support temperature
         if self.temperature is not None and not self._is_reasoning_model():
             params["temperature"] = self.temperature
-        
+
         if structured_output:
             response = await self.aclient.beta.chat.completions.parse(
                 **params,
@@ -292,10 +292,10 @@ class ChatAzureOpenAI(BaseChatLLM):
             parsed = response.choices[0].message.parsed
             content_dump = parsed.model_dump()
             return LLMEvent(type=LLMEventType.TEXT, content=json.dumps(content_dump) if isinstance(content_dump, dict) else str(content_dump), usage=usage)
-        
+
         if json_mode:
             params["response_format"] = {"type": "json_object"}
-            
+
         response = await self.aclient.chat.completions.create(**params)
         return self._process_response(response)
 
@@ -306,7 +306,7 @@ class ChatAzureOpenAI(BaseChatLLM):
     def stream(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> Iterator[LLMStreamEvent]:
         openai_messages = self._convert_messages(messages)
         openai_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._deployment,
             "messages": openai_messages,
@@ -314,24 +314,24 @@ class ChatAzureOpenAI(BaseChatLLM):
             "stream_options": {"include_usage": True},
             **self.kwargs
         }
-        
+
         if openai_tools:
             params["tools"] = openai_tools
-        
+
         if self.temperature is not None and not self._is_reasoning_model():
             params["temperature"] = self.temperature
-        
+
         if json_mode:
             params["response_format"] = {"type": "json_object"}
-        
+
         response = self.client.chat.completions.create(**params)
-        
+
         # Accumulators for streamed tool calls
         tool_call_id = None
         tool_call_name = None
         tool_call_args = ""
         usage = None
-        
+
         text_started = False
         think_started = False
         usage = None
@@ -353,9 +353,9 @@ class ChatAzureOpenAI(BaseChatLLM):
                         thinking_tokens=thinking_tokens,
                     )
                 continue
-            
+
             delta = chunk.choices[0].delta
-            
+
             # Handle reasoning content for o-series models
             if self._is_reasoning_model() and hasattr(delta, 'reasoning_content') and delta.reasoning_content:
                 if not think_started:
@@ -382,14 +382,14 @@ class ChatAzureOpenAI(BaseChatLLM):
                         tool_call_name = tc_delta.function.name
                     if tc_delta.function.arguments:
                         tool_call_args += tc_delta.function.arguments
-        
+
         # Yield accumulated tool call as final response
         if tool_call_id and tool_call_name:
             try:
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(
@@ -411,7 +411,7 @@ class ChatAzureOpenAI(BaseChatLLM):
     async def astream(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> AsyncIterator[LLMStreamEvent]:
         openai_messages = self._convert_messages(messages)
         openai_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._deployment,
             "messages": openai_messages,
@@ -419,24 +419,24 @@ class ChatAzureOpenAI(BaseChatLLM):
             "stream_options": {"include_usage": True},
             **self.kwargs
         }
-        
+
         if openai_tools:
             params["tools"] = openai_tools
-        
+
         if self.temperature is not None and not self._is_reasoning_model():
             params["temperature"] = self.temperature
-        
+
         if json_mode:
             params["response_format"] = {"type": "json_object"}
-        
+
         response = await self.aclient.chat.completions.create(**params)
-        
+
         # Accumulators for streamed tool calls
         tool_call_id = None
         tool_call_name = None
         tool_call_args = ""
         usage = None
-        
+
         text_started = False
         think_started = False
         usage = None
@@ -458,9 +458,9 @@ class ChatAzureOpenAI(BaseChatLLM):
                         thinking_tokens=thinking_tokens,
                     )
                 continue
-            
+
             delta = chunk.choices[0].delta
-            
+
             if self._is_reasoning_model() and hasattr(delta, 'reasoning_content') and delta.reasoning_content:
                 if not think_started:
                     think_started = True
@@ -486,14 +486,14 @@ class ChatAzureOpenAI(BaseChatLLM):
                         tool_call_name = tc_delta.function.name
                     if tc_delta.function.arguments:
                         tool_call_args += tc_delta.function.arguments
-        
+
         # Yield accumulated tool call as final response
         if tool_call_id and tool_call_name:
             try:
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(

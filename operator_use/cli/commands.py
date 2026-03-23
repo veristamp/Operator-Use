@@ -4,7 +4,6 @@ import asyncio
 import json
 import time
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -189,7 +188,6 @@ def sessions(limit: int = typer.Option(20, "--limit", "-n", help="Max sessions t
     console.print(f"\n[bold]Sessions[/bold] ({min(len(files), limit)} of {len(files)})")
     console.print(table)
 
-import time as _time
 
 
 channel_app = typer.Typer(name="channel", help="Manage connected channels.", invoke_without_command=True, no_args_is_help=True)
@@ -846,7 +844,7 @@ def auth_github_copilot():
     console.print("[bold]Authenticating with GitHub Copilot...[/bold]")
     try:
         from operator_use.providers.github_copilot.auth import login
-        result = login()
+        login()
         console.print("[green]Logged in![/green] GitHub Copilot credentials saved.")
     except Exception as e:
         console.print(f"[red]Auth failed:[/red] {e}")
@@ -1055,7 +1053,7 @@ def agents_remove(
     delete_workspace: bool = typer.Option(False, "--delete-workspace", "-d", help="Also delete the workspace directory."),
 ):
     """Remove an agent from config and optionally delete its workspace."""
-    from operator_use.config import load_config, AgentDefinition
+    from operator_use.config import load_config
     from operator_use.cli.start import _resolve_agent_workspace
 
     config = load_config(USERDATA_DIR)

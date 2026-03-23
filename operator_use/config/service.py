@@ -1,7 +1,7 @@
 """Centralized configuration schema for Operator, inspired by nanobot."""
 
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic.alias_generators import to_camel

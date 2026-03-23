@@ -1,9 +1,8 @@
 ﻿import os
 import json
 import logging
-from typing import Iterator, AsyncIterator, List, Optional, Any, Union, overload
+from typing import Iterator, AsyncIterator, List, Optional, Any, overload
 from mistralai import Mistral
-from mistralai.models import AssistantMessage, UserMessage, SystemMessage as MistralSystemMessage, ToolMessage as MistralToolMessage
 from pydantic import BaseModel
 from operator_use.providers.base import BaseChatLLM
 from operator_use.providers.views import TokenUsage, Metadata
@@ -25,7 +24,7 @@ def _mistral_tool_call_id(s: str) -> str:
 class ChatMistral(BaseChatLLM):
     """
     Mistral AI LLM implementation following the BaseChatLLM protocol.
-    
+
     Supports Mistral models including:
     - Mistral Large 3 (mistral-large-2512, 256k)
     - Mistral Small 4 (mistral-small-2603, 256k)
@@ -34,7 +33,7 @@ class ChatMistral(BaseChatLLM):
     - Devstral 2 (code, devstral-2512, 256k)
     - Ministral 3/8/14B (edge, 128k)
     """
-    
+
     def __init__(
         self,
         model: str = "mistral-large-2512",
@@ -83,7 +82,7 @@ class ChatMistral(BaseChatLLM):
                 content = []
                 if msg.content:
                     content.append({"type": "text", "text": msg.content})
-                
+
                 b64_imgs = msg.convert_images(format="base64")
                 for b64 in b64_imgs:
                     content.append({
@@ -254,25 +253,25 @@ class ChatMistral(BaseChatLLM):
     def invoke(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> LLMEvent:
         mistral_messages = self._convert_messages(messages)
         mistral_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._model,
             "messages": mistral_messages,
             **self.kwargs
         }
-        
+
         # Only add tools if they exist
         if mistral_tools:
             params["tools"] = mistral_tools
-        
+
         if self.temperature is not None:
             params["temperature"] = self.temperature
-        
+
         if structured_output or json_mode:
             params["response_format"] = {"type": "json_object"}
 
         response = self.client.chat.complete(**params)
-        
+
         if structured_output:
             try:
                 # Parse JSON response into structured output
@@ -310,24 +309,24 @@ class ChatMistral(BaseChatLLM):
     async def ainvoke(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> LLMEvent:
         mistral_messages = self._convert_messages(messages)
         mistral_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._model,
             "messages": mistral_messages,
             **self.kwargs
         }
-        
+
         if mistral_tools:
             params["tools"] = mistral_tools
-        
+
         if self.temperature is not None:
             params["temperature"] = self.temperature
-        
+
         if structured_output or json_mode:
             params["response_format"] = {"type": "json_object"}
 
         response = await self.client.chat.complete_async(**params)
-        
+
         if structured_output:
             try:
                 content_text, _ = self._extract_content(response.choices[0].message.content)
@@ -363,30 +362,30 @@ class ChatMistral(BaseChatLLM):
     def stream(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> Iterator[LLMStreamEvent]:
         mistral_messages = self._convert_messages(messages)
         mistral_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._model,
             "messages": mistral_messages,
             **self.kwargs
         }
-        
+
         if mistral_tools:
             params["tools"] = mistral_tools
-        
+
         if self.temperature is not None:
             params["temperature"] = self.temperature
-        
+
         if json_mode:
             params["response_format"] = {"type": "json_object"}
-        
+
         response = self.client.chat.stream(**params)
-        
+
         # Accumulators for streamed tool calls
         tool_call_id = None
         tool_call_name = None
         tool_call_args = ""
         usage = None
-        
+
         text_started = False
         think_started = False
 
@@ -419,7 +418,7 @@ class ChatMistral(BaseChatLLM):
                             tool_call_name = tc_delta.function.name
                         if tc_delta.function.arguments:
                             tool_call_args += tc_delta.function.arguments
-            
+
             # Track usage
             if hasattr(chunk, 'data') and hasattr(chunk.data, 'usage') and chunk.data.usage:
                 usage_data = chunk.data.usage
@@ -436,14 +435,14 @@ class ChatMistral(BaseChatLLM):
                     total_tokens=usage_data.total_tokens,
                     thinking_tokens=thinking_tokens,
                 )
-        
+
         # Yield accumulated tool call as final response
         if tool_call_id and tool_call_name:
             try:
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(
@@ -466,30 +465,30 @@ class ChatMistral(BaseChatLLM):
     async def astream(self, messages: list[BaseMessage], tools: list[Tool] = [], structured_output: BaseModel | None = None, json_mode: bool = False) -> AsyncIterator[LLMStreamEvent]:
         mistral_messages = self._convert_messages(messages)
         mistral_tools = self._convert_tools(tools) if tools else None
-        
+
         params = {
             "model": self._model,
             "messages": mistral_messages,
             **self.kwargs
         }
-        
+
         if mistral_tools:
             params["tools"] = mistral_tools
-        
+
         if self.temperature is not None:
             params["temperature"] = self.temperature
-        
+
         if json_mode:
             params["response_format"] = {"type": "json_object"}
-        
+
         response = await self.client.chat.stream_async(**params)
-        
+
         # Accumulators for streamed tool calls
         tool_call_id = None
         tool_call_name = None
         tool_call_args = ""
         usage = None
-        
+
         text_started = False
         think_started = False
 
@@ -522,7 +521,7 @@ class ChatMistral(BaseChatLLM):
                             tool_call_name = tc_delta.function.name
                         if tc_delta.function.arguments:
                             tool_call_args += tc_delta.function.arguments
-            
+
             # Track usage
             if hasattr(chunk, 'data') and hasattr(chunk.data, 'usage') and chunk.data.usage:
                 usage_data = chunk.data.usage
@@ -539,14 +538,14 @@ class ChatMistral(BaseChatLLM):
                     total_tokens=usage_data.total_tokens,
                     thinking_tokens=thinking_tokens,
                 )
-        
+
         # Yield accumulated tool call as final response
         if tool_call_id and tool_call_name:
             try:
                 params = json.loads(tool_call_args)
             except json.JSONDecodeError:
                 params = {}
-                
+
             yield LLMStreamEvent(
                 type=LLMStreamEventType.TOOL_CALL,
                 tool_call=ToolCall(

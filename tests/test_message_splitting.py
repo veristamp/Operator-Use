@@ -1,6 +1,5 @@
 """Tests for Discord/Telegram message splitting logic."""
 
-import pytest
 from operator_use.gateway.channels.discord import _split_message as discord_split
 
 

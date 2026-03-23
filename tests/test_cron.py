@@ -1,10 +1,8 @@
 """Tests for cron scheduling logic."""
 
-import pytest
 import time
-from pathlib import Path
 
-from operator_use.crons.views import CronSchedule, CronPayload, CronJobState, CronJob, CronStore
+from operator_use.crons.views import CronSchedule, CronPayload, CronJobState, CronJob
 from operator_use.crons.service import _ms, _job_to_dict, _dict_to_job, _compute_next_run, Cron
 
 

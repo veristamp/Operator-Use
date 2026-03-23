@@ -7,7 +7,6 @@ from threading import Thread, Event
 import comtypes.client
 import comtypes
 import logging
-import weakref
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +84,7 @@ class WatchDog:
 
     def set_property_callback(self, callback, element=None, property_ids=None):
         """Set the callback for property changes. Pass None to disable.
-        Optionally specify an element to watch (defaults to RootElement) 
+        Optionally specify an element to watch (defaults to RootElement)
         and a list of property IDs to monitor."""
         self._property_callback = callback
         self._property_element = element
@@ -189,12 +188,12 @@ class WatchDog:
             # Cleanup handlers on exit
             if self.uia:
                 if self._focus_handler:
-                    try: 
+                    try:
                         self.uia.RemoveFocusChangedEventHandler(self._focus_handler)
                     except Exception:
                         pass
                     self._focus_handler = None
-                
+
                 if self._structure_handler:
                     try:
                         target = self._active_structure_element if self._active_structure_element else self.uia.GetRootElement()
@@ -213,5 +212,5 @@ class WatchDog:
                     self._property_handler = None
                     self._active_property_element = None
                     self._active_property_ids = None
-            
+
             comtypes.CoUninitialize()

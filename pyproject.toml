@@ -62,10 +62,24 @@ asyncio_mode = "strict"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+exclude = [
+    "operator_use/web/cdp/",
+    "operator_use/computer/macos/ax/",
+    "operator_use/computer/windows/uia/",
+    "operator_use/computer/windows/vdm/",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["F401"]
+"operator_use/cli/start.py" = ["E402"]
+"operator_use/cli/setup.py" = ["E402"]
+"operator_use/cli/commands.py" = ["E402"]
+"operator_use/web/subagent.py" = ["E402"]
+"operator_use/computer/subagent.py" = ["E402"]
 
 [build-system]
 requires = ["hatchling"]

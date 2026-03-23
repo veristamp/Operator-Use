@@ -85,7 +85,6 @@ class ImageMessage(BaseMessage):
     def _compress_image(img, mime_type: str, max_bytes: int = 4_800_000) -> tuple[bytes, str]:
         if Image is None:
             raise ImportError("Pillow is required for ImageMessage. Install with: pip install pillow")
-        from PIL.Image import Image as PILImage
 
         def _save(image, fmt: str, quality: int) -> bytes:
             buf = BytesIO()

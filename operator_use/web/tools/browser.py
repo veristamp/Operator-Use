@@ -1,6 +1,5 @@
 """Browser tool — single unified action interface for web automation via CDP."""
 
-from operator_use.web.browser import Browser
 from operator_use.tools import Tool, ToolResult
 from pydantic import BaseModel, Field, model_validator
 from markdownify import markdownify

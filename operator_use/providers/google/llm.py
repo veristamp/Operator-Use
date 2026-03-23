@@ -458,7 +458,7 @@ class ChatGoogle(BaseChatLLM):
                     text_started = True
                     yield LLMStreamEvent(type=LLMStreamEventType.TEXT_START)
                 yield LLMStreamEvent(type=LLMStreamEventType.TEXT_DELTA, content=text_content)
-        
+
         if think_started:
             yield LLMStreamEvent(type=LLMStreamEventType.THINK_END)
         if text_started:
@@ -534,7 +534,7 @@ class ChatGoogle(BaseChatLLM):
                     text_started = True
                     yield LLMStreamEvent(type=LLMStreamEventType.TEXT_START)
                 yield LLMStreamEvent(type=LLMStreamEventType.TEXT_DELTA, content=text_content)
-        
+
         if think_started:
             yield LLMStreamEvent(type=LLMStreamEventType.THINK_END)
         if text_started:

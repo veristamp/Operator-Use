@@ -90,13 +90,13 @@ class DiscordChannel(BaseChannel):
         """Initialize the bot and handlers."""
         if self._bot is not None:
             return
-        
+
         # Set up intents for message handling
         intents = discord.Intents.all()
         ssl_ctx = ssl.create_default_context(cafile=certifi.where())
         connector = aiohttp.TCPConnector(ssl=ssl_ctx)
         self._bot = commands.Bot(command_prefix="!", intents=intents, connector=connector)
-        
+
         @self._bot.event
         async def on_ready():
             logger.info(f"Discord bot {self._bot.user} connected")
@@ -139,7 +139,7 @@ class DiscordChannel(BaseChannel):
             return
 
         self._init_bot()
-        
+
         try:
             if self.use_webhook:
                 await self._listen_webhook()
@@ -199,13 +199,12 @@ class DiscordChannel(BaseChannel):
             return
 
         # Verify Discord public key for security
-        public_key = None
         try:
             # Start bot connection in background
             asyncio.create_task(self._bot.start(token))
             await self._bot.wait_until_ready()
             # Get public key from bot application info
-            app_info = await self._bot.application_info()
+            await self._bot.application_info()
             # Note: discord.py doesn't directly expose public key, would need to fetch via API
             logger.info("Discord bot connected (webhook mode)")
         except Exception as e:
@@ -295,7 +294,7 @@ class DiscordChannel(BaseChannel):
                 content_parts.append(f"[{media_type}: {file_path}]")
             except Exception as e:
                 logger.error(f"Failed to download attachment: {e}")
-                content_parts.append(f"[attachment: download failed]")
+                content_parts.append("[attachment: download failed]")
 
         content = "\n".join(content_parts) if content_parts else "[empty message]"
         str_channel_id = str(channel_id)

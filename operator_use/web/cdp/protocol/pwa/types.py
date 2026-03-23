@@ -1,6 +1,6 @@
 """CDP PWA Types"""
 from __future__ import annotations
-from typing import TypedDict, NotRequired, Required, Literal, Any, Dict, Union, Optional, List, Set, Tuple
+from typing import TypedDict, Literal, List
 
 class FileHandlerAccept(TypedDict, total=True):
     """The following types are the replica of https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67"""

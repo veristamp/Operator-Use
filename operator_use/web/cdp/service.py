@@ -39,7 +39,7 @@ class Client(Domains):
         self.pending_requests: Dict[int, asyncio.Future] = {}
         self.event_handlers: Dict[str, List[Callable[[Any, Optional[str]], None]]] = {}
         self.on_disconnect: Optional[Callable] = None
-        
+
         if refresh:
             self.refresh()
 
@@ -85,7 +85,7 @@ class Client(Domains):
         self.id_counter+=1
         future = asyncio.Future()
         self.pending_requests[self.id_counter] = future
-        
+
         try:
             message = {"id": self.id_counter, "method": method, "params": params or {}}
             if session_id:
@@ -127,7 +127,7 @@ class Client(Domains):
         """
         if event in self.event_handlers:
             del self.event_handlers[event]
-    
+
     def refresh(self):
         """
         Refresh the CDP protocol definitions by fetching latest schemas and 
@@ -165,7 +165,7 @@ class Client(Domains):
                     logging.debug(f"Received event: {data}")
                     if method not in self.event_handlers:
                         continue
-                    
+
                     handlers = self.event_handlers[method]
                     for handler in handlers:
                         try:

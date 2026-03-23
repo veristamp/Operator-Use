@@ -294,7 +294,7 @@ class TelegramChannel(BaseChannel):
         )
         self._app.add_handler(MessageReactionHandler(self._on_reaction))
         self._app.add_error_handler(self._on_error)
-        
+
         await self._listen()
 
     async def stop(self) -> None:

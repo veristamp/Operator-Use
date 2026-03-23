@@ -22,21 +22,21 @@ async def read_file(path: str, start_line: int | None = None, end_line: int | No
 
     if not resolved_path.is_file():
         return ToolResult.error_result(f"Path is not a file: {resolved_path}")
-    
+
     if is_binary_file(resolved_path):
         return ToolResult.error_result(f"Cannot read binary file: {resolved_path}. Use the terminal tool to execute binary files.")
-    
+
     with open(resolved_path, 'r', encoding='utf-8') as file:
         lines=file.readlines()
-    
+
     total_lines=len(lines)
     start_idx=0 if start_line is None else max(0, start_line - 1)
     end_idx=total_lines if end_line is None else min(total_lines, end_line)
     selected_lines=lines[start_idx:end_idx]
-    
+
     numbered_lines=[f"{i + 1} | {line.rstrip('\n\r')}" for i, line in enumerate(selected_lines, start=start_idx)]
     content="\n".join(numbered_lines)
-    
+
     if len(content) > MAX_TOOL_OUTPUT_LENGTH:
         content=content[:MAX_TOOL_OUTPUT_LENGTH] + "..."
     return ToolResult.success_result(content)
@@ -130,13 +130,13 @@ class ListDir(BaseModel):
 async def list_dir(path: str = '.', **kwargs) -> ToolResult:
     workspace = _get_workspace(**kwargs)
     resolved_path=resolve(base=workspace,path=path)
-    
+
     if not resolved_path.exists():
         return ToolResult.error_result(f"Directory not found: {resolved_path}")
-    
+
     if not resolved_path.is_dir():
         return ToolResult.error_result(f"Path is not a directory: {resolved_path}")
-    
+
     try:
         items=sorted(resolved_path.iterdir(),key=lambda x: (not x.is_dir(),x.name.lower()))
     except Exception as e:
@@ -151,9 +151,9 @@ async def list_dir(path: str = '.', **kwargs) -> ToolResult:
             lines.append(f"📁 {item.name}/")
         else:
             lines.append(f"📄 {item.name}")
-    
+
     output="\n".join(lines)
-    
+
     return ToolResult.success_result(output)
 
 

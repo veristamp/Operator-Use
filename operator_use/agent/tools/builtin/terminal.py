@@ -51,7 +51,7 @@ async def terminal(cmd: str, timeout: int = 10, **kwargs) -> str:
         shell_cmd = ["cmd", "/c", cmd]
     else:
         shell_cmd = ["/bin/bash", "-c", cmd]
-    
+
     workspace = Path.cwd()
     cwd = str(workspace) if workspace.exists() else str(Path.cwd())
     process = await asyncio.create_subprocess_exec(
@@ -85,7 +85,7 @@ async def terminal(cmd: str, timeout: int = 10, **kwargs) -> str:
         lines.append(stderr.rstrip())
     if exit_code != 0:
         lines.append(f"Exit code: {exit_code}")
-    
+
     output="\n".join(lines)
     if len(output) > MAX_TOOL_OUTPUT_LENGTH:
         output=output[:MAX_TOOL_OUTPUT_LENGTH] + "..."

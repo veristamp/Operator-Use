@@ -1,6 +1,6 @@
 """CDP Emulation Types"""
 from __future__ import annotations
-from typing import TypedDict, NotRequired, Required, Literal, Any, Dict, Union, Optional, List, Set, Tuple
+from typing import TypedDict, NotRequired, Literal, List
 
 class SafeAreaInsets(TypedDict, total=False):
     top: NotRequired[int]

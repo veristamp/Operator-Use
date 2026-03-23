@@ -21,7 +21,6 @@ import ctypes
 import comtypes
 import ctypes.wintypes
 import comtypes.client
-import ctypes.wintypes
 from typing import (Any, Callable, Dict, List, Tuple, Optional)
 
 
@@ -42,7 +41,6 @@ ProcessTime = time.perf_counter  # this returns nearly 0 when first call it if p
 ProcessTime()  # need to call it once if python version <= 3.6
 TreeNode = Any
 from .enums import *
-import ctypes.wintypes
 
 def WheelDown(wheelTimes: int = 1, interval: float = 0.05, waitTime: float = OPERATION_WAIT_TIME) -> None:
     for _ in range(wheelTimes):
@@ -964,7 +962,7 @@ def IsProcess64Bit(processId: int) -> Optional[bool]:
     """
     try:
         IsWow64Process = ctypes.windll.kernel32.IsWow64Process
-    except Exception as ex:
+    except Exception:
         return False
     hProcess = ctypes.windll.kernel32.OpenProcess(0x1000, 0, processId)  # PROCESS_QUERY_INFORMATION=0x0400,PROCESS_QUERY_LIMITED_INFORMATION=0x1000
     if hProcess:
@@ -1362,7 +1360,7 @@ def SetThreadDpiAwarenessContext(dpiAwarenessContext: int):
         ctypes.windll.user32.SetThreadDpiAwarenessContext.restype = ctypes.c_void_p
         oldContext = ctypes.windll.user32.SetThreadDpiAwarenessContext(ctypes.c_void_p(dpiAwarenessContext))
         return oldContext
-    except Exception as ex:
+    except Exception:
         pass
 
 
@@ -1452,7 +1450,7 @@ def GetProcesses(detailedInfo: bool = True) -> List[ProcessInfo]:
     if detailedInfo:
         try:
             IsWow64Process = ctypes.windll.kernel32.IsWow64Process
-        except Exception as ex:
+        except Exception:
             IsWow64Process = None
     hSnapshot = ctypes.windll.kernel32.CreateToolhelp32Snapshot(15, 0)  # TH32CS_SNAPALL = 15
     processEntry32 = tagPROCESSENTRY32()
@@ -2083,7 +2081,7 @@ def AddPropertyChangedEventHandler(element, scope: int, cacheRequest, handler, p
     # Let's see how generic we can be.
     # The signature in IUIAutomation is: HRESULT AddPropertyChangedEventHandler(ptr_element, scope, ptr_cacheRequest, ptr_handler, ptr_propertyArray)
     # The last arg is SAFEARRAY(int)
-    
+
     # We might need to manually convert list to SAFEARRAY or rely on comtypes.
     # For now, let's pass a tuple/list and see if comtypes marshals it.
     _AutomationClient.instance().IUIAutomation.AddPropertyChangedEventHandler(element, scope, cacheRequest, handler, propertyArray)

@@ -44,7 +44,6 @@ import json
 import logging
 import sys
 import uuid
-from collections.abc import AsyncIterator
 from typing import Any
 
 from operator_use.acp.config import ACPStdioConfig

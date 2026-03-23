@@ -51,11 +51,11 @@ def print_info(title: str, info_dict: dict):
 
 def select(message: str, choices: list, is_last: bool = False) -> str:
     console.print(f"[bold {PRIMARY}]│[/bold {PRIMARY}]")
-    
+
     formatted_choices = []
     for c in choices:
         formatted_choices.append(Choice(c, f"o {c}"))
-    
+
     result = inquirer.select(
         message=message,
         choices=formatted_choices,
@@ -69,7 +69,7 @@ def select(message: str, choices: list, is_last: bool = False) -> str:
     if result is None:
         console.print("└ Cancelled.")
         sys.exit(1)
-        
+
     return result
 
 def text_input(message: str, is_password: bool = False, is_last: bool = False, default: str = "") -> str:
@@ -91,12 +91,12 @@ def text_input(message: str, is_password: bool = False, is_last: bool = False, d
     if result is None:
         console.print("└ Cancelled.")
         sys.exit(1)
-        
+
     return result
 
 def confirm(message: str, is_last: bool = False) -> bool:
     console.print(f"[bold {PRIMARY}]│[/bold {PRIMARY}]")
-    
+
     result = inquirer.confirm(
         message=message,
         qmark="◆",

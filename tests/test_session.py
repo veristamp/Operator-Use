@@ -1,7 +1,5 @@
 """Tests for Session and SessionStore."""
 
-import pytest
-from pathlib import Path
 from datetime import datetime
 
 from operator_use.session.views import Session

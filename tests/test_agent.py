@@ -1,14 +1,12 @@
 """Tests for Agent — _clean_content, _handle_reaction, and mocked LLM loop."""
 
 import pytest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 from operator_use.agent.service import Agent
 from operator_use.bus.views import IncomingMessage, TextPart
 from operator_use.messages.service import AIMessage, HumanMessage
-from operator_use.session.service import SessionStore
-from operator_use.providers.events import LLMEvent, LLMEventType, ToolCall, Thinking
+from operator_use.providers.events import LLMEvent, LLMEventType, ToolCall
 
 
 # --- _clean_content (static, pure) ---

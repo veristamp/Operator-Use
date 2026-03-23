@@ -115,13 +115,13 @@ async def web_fetch(url: str, prompt: str | None = None, timeout: int = 10, **kw
         status = e.response.status_code
         if status == 403:
             return ToolResult.error_result(
-                f"403 Forbidden: the site is blocking automated requests. "
-                f"Try a different URL, search for a cached version, or use web.search snippets instead."
+                "403 Forbidden: the site is blocking automated requests. "
+                "Try a different URL, search for a cached version, or use web.search snippets instead."
             )
         if status == 404:
             return ToolResult.error_result(f"404 Not Found: the page does not exist at {url}")
         if status == 429:
-            return ToolResult.error_result(f"429 Too Many Requests: rate limited. Wait before retrying.")
+            return ToolResult.error_result("429 Too Many Requests: rate limited. Wait before retrying.")
         return ToolResult.error_result(f"HTTP {status}: {e.response.reason_phrase}")
     except httpx.RequestError as e:
         return ToolResult.error_result(f"Request error: {e}")

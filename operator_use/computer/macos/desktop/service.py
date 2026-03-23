@@ -10,7 +10,6 @@ import logging
 import random
 import io
 import os
-import time
 
 logger = logging.getLogger(__name__)
 

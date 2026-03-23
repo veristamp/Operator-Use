@@ -9,7 +9,7 @@ that provide a consistent interaction API.
 """
 
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from .core import (
     GetAttribute,

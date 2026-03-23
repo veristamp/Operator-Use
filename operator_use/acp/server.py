@@ -21,7 +21,6 @@ This keeps the server decoupled from the Agent internals.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 from collections.abc import AsyncIterator
 from typing import Callable

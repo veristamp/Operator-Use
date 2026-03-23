@@ -53,7 +53,7 @@ class TreeState:
             rows.append(row)
         parts.append("\n".join(rows))
         return "\n".join(parts)
-    
+
 @dataclass
 class BoundingBox:
     left:int
@@ -79,16 +79,16 @@ class BoundingBox:
 
     def xywh_to_string(self):
         return f'({self.left},{self.top},{self.width},{self.height})'
-    
+
     def xyxy_to_string(self):
         x1,y1,x2,y2=self.convert_xywh_to_xyxy()
         return f'({x1},{y1},{x2},{y2})'
-    
+
     def convert_xywh_to_xyxy(self)->tuple[int,int,int,int]:
         x1,y1=self.left,self.top
         x2,y2=self.left+self.width,self.top+self.height
         return x1,y1,x2,y2
-    
+
     def contains(self, other: 'BoundingBox') -> bool:
         return (
             self.left <= other.left and
