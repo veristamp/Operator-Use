@@ -2,6 +2,7 @@ import os
 import sys
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.utils import get_style
 from rich.console import Console
 
@@ -29,6 +30,13 @@ clack_style = get_style({
     "selected": f"{SECONDARY} bold",
     "instruction": f"{MUTED}",
 }, False)
+
+
+class BackRequest(Exception):
+    """Raised when the user requests to go back one prompt with Esc."""
+
+
+BACK_KEYBINDINGS = {"skip": [{"key": "escape"}]}
 
 def _version() -> str:
     try:
@@ -110,12 +118,16 @@ def select(message: str, choices: list, is_last: bool = False, allow_back: bool 
         pointer="◉", # The active pointer replaces the margin slot before the Choice item
         instruction=" ",
         style=clack_style,
+        keybindings=BACK_KEYBINDINGS,
+        mandatory=False,
     )
     result = _execute_prompt(prompt, allow_back=allow_back)
 
-    if result is None:
+    if result == INQUIRERPY_KEYBOARD_INTERRUPT:
         console.print("└ Cancelled.")
         sys.exit(1)
+    if result is None:
+        raise BackRequest()
 
     return result
 
@@ -128,17 +140,23 @@ def text_input(message: str, is_password: bool = False, is_last: bool = False, d
             qmark="◆",
             amark="◇",
             style=clack_style,
+            keybindings=BACK_KEYBINDINGS,
+            mandatory=False,
         )
     else:
         kwargs = dict(message=message, qmark="◆", amark="◇", style=clack_style)
         if default:
             kwargs["default"] = default
+        kwargs["keybindings"] = BACK_KEYBINDINGS
+        kwargs["mandatory"] = False
         prompt = inquirer.text(**kwargs)
     result = _execute_prompt(prompt, allow_back=allow_back)
 
-    if result is None:
+    if result == INQUIRERPY_KEYBOARD_INTERRUPT:
         console.print("└ Cancelled.")
         sys.exit(1)
+    if result is None:
+        raise BackRequest()
 
     return result
 
@@ -151,12 +169,16 @@ def confirm(message: str, is_last: bool = False, allow_back: bool = True) -> boo
         amark="◇",
         default=True,
         style=clack_style,
+        keybindings=BACK_KEYBINDINGS,
+        mandatory=False,
     )
     result = _execute_prompt(prompt, allow_back=allow_back)
 
-    if result is None:
+    if result == INQUIRERPY_KEYBOARD_INTERRUPT:
         console.print("└ Cancelled.")
         sys.exit(1)
+    if result is None:
+        raise BackRequest()
 
     return result
 
