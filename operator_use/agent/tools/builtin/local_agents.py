@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Optional, Literal
+from typing import Any, Optional, Literal
 
 from pydantic import BaseModel, Field
 
 from operator_use.bus.views import IncomingMessage, TextPart
 from operator_use.messages import HumanMessage
 from operator_use.tools import Tool, ToolResult
+
+LOCAL_AGENT_DELEGATION_CHAIN = "_local_agent_delegation_chain"
 
 
 class LocalAgents(BaseModel):
@@ -37,6 +39,17 @@ def _agent_capabilities(agent) -> str:
     return ", ".join(caps) if caps else "general"
 
 
+def _delegation_chain_from_metadata(metadata: dict[str, Any] | None) -> list[str]:
+    if not isinstance(metadata, dict):
+        return []
+
+    chain = metadata.get(LOCAL_AGENT_DELEGATION_CHAIN, [])
+    if not isinstance(chain, list):
+        return []
+
+    return [agent_id for agent_id in chain if isinstance(agent_id, str) and agent_id]
+
+
 @Tool(
     name="localagents",
     description=(
@@ -54,7 +67,10 @@ async def localagents(
     registry: dict = kwargs.get("_agent_registry") or {}
     current_agent = kwargs.get("_agent")
     current_agent_id = kwargs.get("_agent_id", "")
+    current_metadata = kwargs.get("_metadata") or {}
     parent_session_id = kwargs.get("_session_id", "delegation")
+    parent_channel = kwargs.get("_channel") or "direct"
+    parent_chat_id = kwargs.get("_chat_id") or parent_session_id
 
     if action == "agents":
         if not registry:
@@ -86,18 +102,30 @@ async def localagents(
     if current_agent is not None and target is current_agent:
         return ToolResult.error_result("Refusing to delegate to the current agent. Choose a different local agent.")
 
+    delegation_chain = _delegation_chain_from_metadata(current_metadata)
+    if current_agent_id and (not delegation_chain or delegation_chain[-1] != current_agent_id):
+        delegation_chain = [*delegation_chain, current_agent_id]
+    if name in delegation_chain:
+        chain_text = " -> ".join([*delegation_chain, name])
+        return ToolResult.error_result(
+            f"Refusing circular local delegation: {chain_text}. Choose a target outside the current delegation chain."
+        )
+
     delegated_session_id = f"{parent_session_id}__delegate__{current_agent_id or 'agent'}-to-{name}"
+    delegated_metadata = {
+        **current_metadata,
+        "_delegated_local_agent_call": True,
+        "from_agent": current_agent_id,
+        "to_agent": name,
+        LOCAL_AGENT_DELEGATION_CHAIN: [*delegation_chain, name],
+    }
     incoming = IncomingMessage(
-        channel="direct",
-        chat_id=delegated_session_id,
+        channel=parent_channel,
+        chat_id=parent_chat_id,
         account_id=name,
         user_id=current_agent_id or "agent",
         parts=[TextPart(content=task)],
-        metadata={
-            "_delegated_local_agent_call": True,
-            "from_agent": current_agent_id,
-            "to_agent": name,
-        },
+        metadata=delegated_metadata,
     )
 
     response = await target.run(

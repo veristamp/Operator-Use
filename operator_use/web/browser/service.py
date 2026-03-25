@@ -177,7 +177,7 @@ class Browser:
             return None
         port_file = Path(self.config.user_data_dir) / 'DevToolsActivePort'
         try:
-            lines = [l.strip() for l in port_file.read_text(encoding='utf-8').splitlines() if l.strip()]
+            lines = [line.strip() for line in port_file.read_text(encoding='utf-8').splitlines() if line.strip()]
             if len(lines) < 2:
                 return None
             port, ws_path = lines[0], lines[1]
