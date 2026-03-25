@@ -12,29 +12,15 @@ Example:
 import asyncio
 import json
 import logging
-from dataclasses import dataclass
 from typing import Optional
 
 import aiomqtt
 
 from operator_use.bus.views import IncomingMessage, OutgoingMessage, TextPart, text_from_parts
 from operator_use.gateway.channels.base import BaseChannel
-from operator_use.gateway.channels.config import Config
+from operator_use.gateway.channels.config import MQTTConfig
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class MQTTConfig(Config):
-    """MQTT broker configuration."""
-    broker_host: str = ""
-    broker_port: int = 1883
-    username: str = ""
-    password: str = ""
-    topic_prefix: str = "operator"   # subscribes to {prefix}/in/#, publishes to {prefix}/out/{device}
-    client_id: str = "operator-agent"
-    tls: bool = False                # set True for TLS (port 8883)
-    keepalive: int = 60
 
 
 class MQTTChannel(BaseChannel):

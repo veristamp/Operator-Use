@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-from dataclasses import dataclass
 from typing import Optional
 
 import twitchio
@@ -15,7 +14,7 @@ from operator_use.bus.views import (
     TextPart,
     text_from_parts,
 )
-from operator_use.gateway.channels.config import Config
+from operator_use.gateway.channels.config import TwitchConfig
 from operator_use.gateway.channels.base import BaseChannel
 
 logger = logging.getLogger(__name__)
@@ -43,17 +42,6 @@ def _split_message(content: str, max_len: int = MAX_MESSAGE_LEN) -> list[str]:
         chunks.append(content[:pos])
         content = content[pos:].lstrip()
     return chunks
-
-
-@dataclass
-class TwitchConfig(Config):
-    """Twitch IRC channel configuration."""
-
-    token: str = ""           # OAuth token (oauth:xxxx or raw token)
-    nick: str = ""            # Bot's Twitch username
-    channel_name: str = ""    # Channel to join (without #)
-    account_id: str = ""      # Internal routing ID (set automatically for per-agent bots)
-    prefix: str = "!"         # Command prefix for twitchio
 
 
 class _TwitchBot(commands.Bot):
